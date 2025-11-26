@@ -1721,23 +1721,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Глобальные обработчики для touch-событий (мобильные устройства)
     document.addEventListener('touchmove', (e) => {
         if (e.touches.length === 1) {
-            e.preventDefault(); // Предотвращаем прокрутку страницы при перетаскивании
             const touch = e.touches[0];
             
-            // Отслеживаем движение для определения тапа
+            // Проверяем, перетаскивается ли какой-либо кубик
+            let isDraggingAnyDice = false;
             mainDicePhysics.forEach((physics) => {
-                if (physics.isDragging && physics.touchStartTime > 0) {
-                    const moveDistance = Math.sqrt(
-                        Math.pow(touch.clientX - physics.touchStartX, 2) + 
-                        Math.pow(touch.clientY - physics.touchStartY, 2)
-                    );
-                    if (moveDistance > 5) {
-                        physics.hasMoved = true;
+                if (physics.isDragging) {
+                    isDraggingAnyDice = true;
+                    // Отслеживаем движение для определения тапа
+                    if (physics.touchStartTime > 0) {
+                        const moveDistance = Math.sqrt(
+                            Math.pow(touch.clientX - physics.touchStartX, 2) + 
+                            Math.pow(touch.clientY - physics.touchStartY, 2)
+                        );
+                        if (moveDistance > 5) {
+                            physics.hasMoved = true;
+                        }
                     }
                 }
             });
             
-            updateDragPosition(touch.clientX, touch.clientY);
+            // Предотвращаем прокрутку страницы ТОЛЬКО при перетаскивании кубика
+            if (isDraggingAnyDice) {
+                e.preventDefault();
+                updateDragPosition(touch.clientX, touch.clientY);
+            }
+            // Если кубик не перетаскивается, позволяем стандартную прокрутку страницы
         }
     }, { passive: false });
     

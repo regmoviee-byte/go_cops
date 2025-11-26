@@ -14,6 +14,7 @@
             <label for="import-json" class="save-button">Достать из картотеки</label>
             <input type="file" id="import-json" accept=".json" style="display: none;">
             <button id="add-dice-main" class="save-button">Добавить кубик</button>
+            <button id="clear-all" class="save-button">Стереть дело</button>
         </div>
         
         <!-- Контейнер для кубиков на главном экране -->
@@ -46,39 +47,39 @@
                 <div class="form-fields">
                     <div class="form-field">
                         <label>ФИО И ЗВАНИЕ</label>
-                        <input type="text" class="form-input" id="fio-rank" placeholder="">
+                        <textarea class="form-input" id="fio-rank" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>ПРОИСХОЖДЕНИЕ</label>
-                        <input type="text" class="form-input" id="origin" placeholder="">
+                        <textarea class="form-input" id="origin" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>ПРОШЛАЯ СЛУЖБА</label>
-                        <input type="text" class="form-input" id="past-service" placeholder="">
+                        <textarea class="form-input" id="past-service" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>ПРИЗВАНИЕ</label>
-                        <input type="text" class="form-input" id="calling" placeholder="">
+                        <textarea class="form-input" id="calling" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>СЛАБОСТЬ</label>
-                        <input type="text" class="form-input" id="weakness" placeholder="">
+                        <textarea class="form-input" id="weakness" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>СВЯЗИ <span class="triangle-up">▲</span></label>
-                        <input type="text" class="form-input" id="connections-up" placeholder="">
+                        <textarea class="form-input" id="connections-up" placeholder="" rows="1"></textarea>
                         <span class="triangle-down">▼</span>
-                        <input type="text" class="form-input" id="connections-down" placeholder="">
+                        <textarea class="form-input" id="connections-down" placeholder="" rows="1"></textarea>
                     </div>
                     
                     <div class="form-field">
                         <label>ОСОБЕННОСТЬ</label>
-                        <input type="text" class="form-input" id="peculiarity" placeholder="">
+                        <textarea class="form-input" id="peculiarity" placeholder="" rows="1"></textarea>
                     </div>
                 </div>
             </div>
@@ -417,7 +418,10 @@
         <div class="notification-modal-content">
             <h3 class="notification-title">Подтвердите действие</h3>
             <p class="notification-message" id="notification-message"></p>
-            <button class="notification-ok-button" id="notification-ok">OK</button>
+            <div class="notification-buttons">
+                <button class="notification-ok-button" id="notification-ok">OK</button>
+                <button class="notification-cancel-button" id="notification-cancel" style="display: none;">Отмена</button>
+            </div>
         </div>
     </div>
     

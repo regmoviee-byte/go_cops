@@ -98,18 +98,62 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('notification-modal');
         const messageEl = document.getElementById('notification-message');
         const okButton = document.getElementById('notification-ok');
+        const cancelButton = document.getElementById('notification-cancel');
         
         if (!modal || !messageEl || !okButton) return;
         
         messageEl.textContent = message;
         modal.style.display = 'block';
         
-        // Закрытие по клику на кнопку
+        // Скрываем кнопку отмены для обычных уведомлений
+        if (cancelButton) {
+            cancelButton.style.display = 'none';
+        }
+        
+        // Удаляем старые обработчики и добавляем новые
+        okButton.onclick = null;
         okButton.onclick = function() {
             modal.style.display = 'none';
         };
         
-        // Закрытие по клику вне модального окна
+        modal.onclick = null;
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    }
+    
+    // Функция для показа модального окна подтверждения
+    function showConfirm(message, onConfirm) {
+        const modal = document.getElementById('notification-modal');
+        const messageEl = document.getElementById('notification-message');
+        const okButton = document.getElementById('notification-ok');
+        const cancelButton = document.getElementById('notification-cancel');
+        
+        if (!modal || !messageEl || !okButton || !cancelButton) return;
+        
+        messageEl.textContent = message;
+        modal.style.display = 'block';
+        
+        // Показываем кнопку отмены
+        cancelButton.style.display = 'inline-block';
+        
+        // Удаляем старые обработчики и добавляем новые
+        okButton.onclick = null;
+        okButton.onclick = function() {
+            modal.style.display = 'none';
+            if (onConfirm) {
+                onConfirm();
+            }
+        };
+        
+        cancelButton.onclick = null;
+        cancelButton.onclick = function() {
+            modal.style.display = 'none';
+        };
+        
+        modal.onclick = null;
         modal.onclick = function(e) {
             if (e.target === modal) {
                 modal.style.display = 'none';
@@ -354,6 +398,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Автоматическая загрузка при старте - без уведомления
+            
+            // Обновляем высоту всех textarea после загрузки данных
+            setTimeout(() => {
+                document.querySelectorAll('textarea.form-input').forEach(textarea => {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = textarea.scrollHeight + 'px';
+                });
+            }, 50);
         } catch (e) {
             console.error('Ошибка загрузки:', e);
             showNotification('Ошибка при загрузке данных');
@@ -469,8 +521,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let useDisadvantage = false;
         
         if (finalSkillLevel === 0) {
-            diceCount = 2 + additionalDice;
-            useDisadvantage = true;
+            // Если навыка нет
+            if (additionalDice === 0) {
+                // Без дополнительных кубиков: 2 кубика с disadvantage
+                diceCount = 2;
+                useDisadvantage = true;
+            } else {
+                // С дополнительными кубиками: убираем штрафной кубик
+                // Бросаем только дополнительные кубики (без базового)
+                // +1 кубик → 1 кубик, +2 кубика → 2 кубика, +3 кубика → 3 кубика
+                diceCount = additionalDice;
+                useDisadvantage = false;
+            }
         }
         
         const diceElements = [];
@@ -1020,6 +1082,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Сохраняем в localStorage
                 saveToLocalStorage();
+                
+                // Обновляем высоту всех textarea после загрузки данных
+                setTimeout(() => {
+                    document.querySelectorAll('textarea.form-input').forEach(textarea => {
+                        autoResizeTextarea(textarea);
+                    });
+                }, 100);
+                
                 showNotification('Личное дело загружено из файла!');
             } catch (error) {
                 console.error('Ошибка импорта:', error);
@@ -1029,9 +1099,78 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.readAsText(file);
     }
     
+    // Функция очистки всех данных
+    function clearAllData() {
+        // Показываем поп-ап подтверждения
+        showConfirm('Вы уверены, что хотите стереть всё личное дело? Это действие нельзя отменить.', function() {
+            // Выполняем очистку после подтверждения
+            performClearAll();
+        });
+    }
+    
+    // Функция выполнения очистки всех данных
+    function performClearAll() {
+        
+        // Очищаем все текстовые поля
+        document.querySelectorAll('input.form-input, textarea.form-input, textarea.notes-textarea-full').forEach(field => {
+            field.value = '';
+            if (field.tagName === 'TEXTAREA') {
+                autoResizeTextarea(field);
+            }
+        });
+        
+        // Очищаем все чекбоксы навыков
+        document.querySelectorAll('.attr-checkbox').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // Пересчитываем уровни групп навыков
+        ['head', 'body', 'voice'].forEach(group => {
+            calculateGroupLevel(group);
+        });
+        
+        // Очищаем кружки снаряжения
+        document.querySelectorAll('.load-circle').forEach(circle => {
+            circle.classList.remove('filled');
+        });
+        
+        // Очищаем кружки выгорания
+        document.querySelectorAll('.burnout-circle').forEach(circle => {
+            circle.classList.remove('filled');
+        });
+        
+        // Очищаем поля травм
+        document.querySelectorAll('.injury-field').forEach(field => {
+            field.value = '';
+        });
+        
+        // Очищаем фото
+        const characterPhoto = document.getElementById('character-photo');
+        if (characterPhoto) {
+            characterPhoto.src = '';
+            characterPhoto.style.display = 'none';
+            const uploadLabel = document.querySelector('.photo-upload-label');
+            if (uploadLabel) uploadLabel.style.display = 'inline-block';
+        }
+        
+        // Удаляем все кубики с экрана
+        mainDiceElements.forEach((element, index) => {
+            element.wrapper.remove();
+        });
+        mainDiceElements.length = 0;
+        mainDicePhysics.length = 0;
+        
+        // Очищаем localStorage
+        localStorage.removeItem('characterSheet');
+        
+        // Показываем уведомление
+        showNotification('Личное дело стёрто!');
+    }
+    
     // Обработчики кнопок
     const exportBtn = document.getElementById('export-json');
     const importBtn = document.getElementById('import-json');
+    const clearBtn = document.getElementById('clear-all');
     
     if (exportBtn) {
         exportBtn.addEventListener('click', exportToJSON);
@@ -1041,18 +1180,45 @@ document.addEventListener('DOMContentLoaded', function() {
         importBtn.addEventListener('change', importFromJSON);
     }
     
-    // Автосохранение при изменении
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearAllData);
+    }
+    
+    // Функция автоматического изменения высоты textarea
+    function autoResizeTextarea(textarea) {
+        if (textarea.tagName === 'TEXTAREA') {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+    }
+    
+    // Автосохранение при изменении и автоизменение высоты для textarea
     let saveTimeout;
     const inputs = document.querySelectorAll('input, textarea');
     inputs.forEach(input => {
         input.addEventListener('input', function() {
+            // Автоматическое изменение высоты для textarea
+            autoResizeTextarea(this);
+            
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(saveToLocalStorage, 1000);
         });
+        
+        // Устанавливаем правильную высоту при загрузке
+        if (input.tagName === 'TEXTAREA') {
+            autoResizeTextarea(input);
+        }
     });
     
     // Загружаем при старте
     loadFromLocalStorage();
+    
+    // Обновляем высоту всех textarea после загрузки данных
+    setTimeout(() => {
+        document.querySelectorAll('textarea.form-input').forEach(textarea => {
+            autoResizeTextarea(textarea);
+        });
+    }, 100);
     
     // Система кубиков на главном экране
     const mainDiceContainer = document.getElementById('main-dice-container');
@@ -1249,18 +1415,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, { passive: false });
         
-        // Проверяем, был ли это тап (без значительного движения)
-        diceWrapper.addEventListener('touchend', (e) => {
-            if (e.changedTouches.length === 1 && !physics.isDragging) {
-                const endTime = new Date().getTime();
-                const touchDuration = endTime - physics.touchStartTime;
+        // Локальный обработчик touchmove для кубика (не мешает прокрутке страницы)
+        diceWrapper.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && physics.isDragging) {
+                e.preventDefault();
+                e.stopPropagation();
+                const touch = e.touches[0];
                 
-                // Если это был короткий тап без движения - запоминаем время для двойного тапа
-                if (!physics.hasMoved && touchDuration < 300) {
-                    physics.lastTapTime = endTime;
-                } else {
-                    physics.lastTapTime = 0; // Сбрасываем, если было движение
+                // Отслеживаем движение для определения тапа
+                if (physics.touchStartTime > 0) {
+                    const moveDistance = Math.sqrt(
+                        Math.pow(touch.clientX - physics.touchStartX, 2) + 
+                        Math.pow(touch.clientY - physics.touchStartY, 2)
+                    );
+                    if (moveDistance > 5) {
+                        physics.hasMoved = true;
+                    }
                 }
+                
+                // Вычисляем скорость движения
+                const deltaTime = 16; // Примерно 60 FPS
+                physics.mouseVelX = (touch.clientX - physics.lastMouseX) / deltaTime * 1000;
+                physics.mouseVelY = (touch.clientY - physics.lastMouseY) / deltaTime * 1000;
+                
+                // Обновляем целевую позицию (кубик будет плавно следовать)
+                const maxX = window.innerWidth - diceSize;
+                const maxY = window.innerHeight - diceSize;
+                physics.targetX = Math.max(0, Math.min(touch.clientX - physics.dragStartX, maxX));
+                physics.targetY = Math.max(0, Math.min(touch.clientY - physics.dragStartY, maxY));
+                
+                physics.lastMouseX = touch.clientX;
+                physics.lastMouseY = touch.clientY;
+            }
+        }, { passive: false });
+        
+        // Локальная функция завершения перетаскивания для этого кубика
+        const endDiceDrag = () => {
+            if (physics.isDragging) {
+                physics.isDragging = false;
+                diceWrapper.style.cursor = 'grab';
+                
+                // Придаем скорость при броске на основе скорости движения
+                const speedMultiplier = 0.5;
+                physics.vx = physics.mouseVelX * speedMultiplier;
+                physics.vy = physics.mouseVelY * speedMultiplier;
+                
+                // Запускаем анимацию если еще не запущена
+                if (!mainAnimationFrameId) {
+                    animateMainDice();
+                }
+            }
+        };
+        
+        // Проверяем, был ли это тап (без значительного движения) и завершаем перетаскивание
+        diceWrapper.addEventListener('touchend', (e) => {
+            if (e.changedTouches.length === 1) {
+                if (physics.isDragging) {
+                    // Завершаем перетаскивание
+                    e.preventDefault();
+                    e.stopPropagation();
+                    endDiceDrag();
+                } else {
+                    const endTime = new Date().getTime();
+                    const touchDuration = endTime - physics.touchStartTime;
+                    
+                    // Если это был короткий тап без движения - запоминаем время для двойного тапа
+                    if (!physics.hasMoved && touchDuration < 300) {
+                        physics.lastTapTime = endTime;
+                    } else {
+                        physics.lastTapTime = 0; // Сбрасываем, если было движение
+                    }
+                }
+            }
+        }, { passive: false });
+        
+        // Обработка отмены касания (например, при входящем звонке)
+        diceWrapper.addEventListener('touchcancel', (e) => {
+            if (physics.isDragging) {
+                endDiceDrag();
             }
         }, { passive: false });
         
@@ -1718,48 +1950,7 @@ document.addEventListener('DOMContentLoaded', function() {
         endDrag();
     });
     
-    // Глобальные обработчики для touch-событий (мобильные устройства)
-    document.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 1) {
-            const touch = e.touches[0];
-            
-            // Проверяем, перетаскивается ли какой-либо кубик
-            let isDraggingAnyDice = false;
-            mainDicePhysics.forEach((physics) => {
-                if (physics.isDragging) {
-                    isDraggingAnyDice = true;
-                    // Отслеживаем движение для определения тапа
-                    if (physics.touchStartTime > 0) {
-                        const moveDistance = Math.sqrt(
-                            Math.pow(touch.clientX - physics.touchStartX, 2) + 
-                            Math.pow(touch.clientY - physics.touchStartY, 2)
-                        );
-                        if (moveDistance > 5) {
-                            physics.hasMoved = true;
-                        }
-                    }
-                }
-            });
-            
-            // Предотвращаем прокрутку страницы ТОЛЬКО при перетаскивании кубика
-            if (isDraggingAnyDice) {
-                e.preventDefault();
-                updateDragPosition(touch.clientX, touch.clientY);
-            }
-            // Если кубик не перетаскивается, позволяем стандартную прокрутку страницы
-        }
-    }, { passive: false });
-    
-    document.addEventListener('touchend', (e) => {
-        if (e.changedTouches.length === 1) {
-            endDrag();
-        }
-    }, { passive: false });
-    
-    document.addEventListener('touchcancel', (e) => {
-        // Отменяем перетаскивание при отмене касания (например, при входящем звонке)
-        endDrag();
-    }, { passive: false });
+    // touch-события обрабатываются локально на каждом кубике, чтобы не мешать прокрутке страницы
     
     // Обработчики кнопок
     const addDiceBtn = document.getElementById('add-dice-main');

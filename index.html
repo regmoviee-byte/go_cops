@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дело следака - Прорвёмся, Опера!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="character-sheet-container">
+        <!-- Кнопки сохранения/загрузки вверху -->
+        <div class="save-buttons-top">
+            <button id="export-json" class="save-button">Сохранить личное дело</button>
+            <label for="import-json" class="save-button">Достать из картотеки</label>
+            <input type="file" id="import-json" accept=".json" style="display: none;">
+            <button id="add-dice-main" class="save-button">Добавить кубик</button>
+        </div>
+        
+        <!-- Контейнер для кубиков на главном экране -->
+        <div id="main-dice-container" class="main-dice-container"></div>
+        
+        <div class="character-sheet">
+            <!-- Левая колонка - Личные данные -->
+            <div class="left-column">
+                <div class="form-header">
+                    <div class="form-number">Форма 12-ЛД</div>
+                    <div class="seal-top">
+                        <img src="https://static.tildacdn.com/tild3564-3361-4461-b033-656438343834/b07faed3755ea0f34ffb.png" alt="Печать МВД СССР" class="seal-image-small">
+                    </div>
+                </div>
+                
+                <h1 class="main-title">ЛИЧНОЕ ДЕЛО</h1>
+                
+                <!-- Фото опера -->
+                <div class="photo-section">
+                    <label for="photo-upload" class="photo-label">ФОТО ОПЕРА</label>
+                    <div class="photo-container">
+                        <img id="character-photo" src="" alt="Фото опера" class="character-photo" style="display: none;">
+                        <label for="photo-upload" class="photo-upload-label">
+                            <span>Загрузить фото</span>
+                        </label>
+                        <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="form-fields">
+                    <div class="form-field">
+                        <label>ФИО И ЗВАНИЕ</label>
+                        <input type="text" class="form-input" id="fio-rank" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>ПРОИСХОЖДЕНИЕ</label>
+                        <input type="text" class="form-input" id="origin" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>ПРОШЛАЯ СЛУЖБА</label>
+                        <input type="text" class="form-input" id="past-service" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>ПРИЗВАНИЕ</label>
+                        <input type="text" class="form-input" id="calling" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>СЛАБОСТЬ</label>
+                        <input type="text" class="form-input" id="weakness" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>СВЯЗИ <span class="triangle-up">▲</span></label>
+                        <input type="text" class="form-input" id="connections-up" placeholder="">
+                        <span class="triangle-down">▼</span>
+                        <input type="text" class="form-input" id="connections-down" placeholder="">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label>ОСОБЕННОСТЬ</label>
+                        <input type="text" class="form-input" id="peculiarity" placeholder="">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Правая колонка - Навыки и характеристики -->
+            <div class="right-column">
+                <!-- Навыки -->
+                <div class="skills-container">
+                    <!-- ГОЛОВА -->
+                    <div class="attribute-section" data-group="head">
+                        <div class="section-header">
+                            <h2 class="section-title">ГОЛОВА</h2>
+                            <div class="group-level-container">
+                                <div class="group-level">
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skills-rows">
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="archives" data-group="head">Архивы</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="archives" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="archives" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="archives" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="archives" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="study" data-group="head">Изучение</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="study" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="study" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="study" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="study" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="surveillance" data-group="head">Слежка</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="surveillance" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="surveillance" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="surveillance" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="surveillance" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="inspection" data-group="head">Осмотр</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="inspection" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="inspection" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="inspection" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="head" data-skill="inspection" data-level="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <!-- ТЕЛО -->
+                    <div class="attribute-section" data-group="body">
+                        <div class="section-header">
+                            <h2 class="section-title">ТЕЛО</h2>
+                            <div class="group-level-container">
+                                <div class="group-level">
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skills-rows">
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="reckless" data-group="body">Лихачить</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="reckless" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="reckless" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="reckless" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="reckless" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="infiltrate" data-group="body">Проникнуть</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="infiltrate" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="infiltrate" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="infiltrate" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="infiltrate" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="strike" data-group="body">Ударить</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="strike" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="strike" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="strike" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="strike" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="destroy" data-group="body">Уничтожить</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="destroy" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="destroy" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="destroy" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="body" data-skill="destroy" data-level="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <!-- ГОЛОС -->
+                    <div class="attribute-section" data-group="voice">
+                        <div class="section-header">
+                            <h2 class="section-title">ГОЛОС</h2>
+                            <div class="group-level-container">
+                                <div class="group-level">
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                    <span class="level-square"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skills-rows">
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="pressure" data-group="voice">Давить</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="pressure" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="pressure" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="pressure" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="pressure" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="command" data-group="voice">Приказывать</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="command" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="command" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="command" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="command" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="listen" data-group="voice">Слушать</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="listen" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="listen" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="listen" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="listen" data-level="4">
+                                </div>
+                            </div>
+                            <div class="attribute-row">
+                                <div class="skill-label-wrapper">
+                                    <label class="skill-name" data-skill="persuade" data-group="voice">Убеждать</label>
+                                </div>
+                                <div class="checkboxes">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="persuade" data-level="1">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="persuade" data-level="2">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="persuade" data-level="3">
+                                    <input type="checkbox" class="attr-checkbox" data-group="voice" data-skill="persuade" data-level="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Подсказка для проверки навыков -->
+                    <div class="skills-hint">
+                        Чтобы совершить проверку, нажмите на название навыка
+                    </div>
+                </div>
+                
+                <!-- СНАРЯЖЕНИЕ / НАГРУЗКА -->
+                <div class="equipment-section">
+                    <h2 class="section-title">СНАРЯЖЕНИЕ / НАГРУЗКА</h2>
+                    <div class="load-row">
+                        <label>Лёгкая</label>
+                        <div class="load-circles">
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                        </div>
+                    </div>
+                    <div class="load-row">
+                        <label>Средняя</label>
+                        <div class="load-circles">
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                        </div>
+                    </div>
+                    <div class="load-row">
+                        <label>Тяжелая</label>
+                        <div class="load-circles">
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                            <span class="load-circle"></span>
+                        </div>
+                    </div>
+                    <div class="equipment-fields">
+                        <input type="text" class="equipment-input" placeholder="">
+                        <input type="text" class="equipment-input" placeholder="">
+                        <input type="text" class="equipment-input" placeholder="">
+                    </div>
+                </div>
+                
+                <!-- ВЫГОРАНИЕ -->
+                <div class="burnout-section">
+                    <h2 class="section-title">ВЫГОРАНИЕ</h2>
+                    <div class="burnout-circles">
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                        <span class="burnout-circle"></span>
+                    </div>
+                </div>
+                
+                <!-- ТРАВМЫ -->
+                <div class="injuries-section">
+                    <h2 class="section-title">ТРАВМЫ</h2>
+                    <div class="injuries-grid">
+                        <div class="injuries-column">
+                            <div class="injury-label">Физические</div>
+                            <div class="injury-level-label">Тяжелая</div>
+                            <textarea class="injury-field heavy" placeholder=""></textarea>
+                            <div class="injury-level-label">Средние</div>
+                            <div class="injury-fields-row">
+                                <textarea class="injury-field medium" placeholder=""></textarea>
+                                <textarea class="injury-field medium" placeholder=""></textarea>
+                            </div>
+                            <div class="injury-level-label">Легкие</div>
+                            <div class="injury-fields-row">
+                                <textarea class="injury-field light" placeholder=""></textarea>
+                                <textarea class="injury-field light" placeholder=""></textarea>
+                            </div>
+                        </div>
+                        <div class="injuries-column">
+                            <div class="injury-label">Психологические</div>
+                            <div class="injury-level-label">Тяжелая</div>
+                            <textarea class="injury-field heavy" placeholder=""></textarea>
+                            <div class="injury-level-label">Средние</div>
+                            <div class="injury-fields-row">
+                                <textarea class="injury-field medium" placeholder=""></textarea>
+                                <textarea class="injury-field medium" placeholder=""></textarea>
+                            </div>
+                            <div class="injury-level-label">Легкие</div>
+                            <div class="injury-fields-row">
+                                <textarea class="injury-field light" placeholder=""></textarea>
+                                <textarea class="injury-field light" placeholder=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scars-field">
+                        <label>Шрамы</label>
+                        <textarea class="injury-field scars" placeholder=""></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Поле Заметки на всю ширину -->
+        <div class="notes-section-full">
+            <label class="notes-label">ЗАМЕТКИ</label>
+            <textarea class="notes-textarea-full" id="notes" placeholder=""></textarea>
+        </div>
+        
+    </div>
+    
+    <!-- Модалка добавления кубиков -->
+    <div id="add-dice-modal" class="add-dice-modal" style="display: none;">
+        <div class="add-dice-modal-content">
+            <h3 class="add-dice-title">Добавить кубик?</h3>
+            <p class="add-dice-text">Сколько дополнительных кубиков добавить к проверке?</p>
+            <input type="number" id="additional-dice" class="add-dice-input" min="0" max="10" value="0">
+            <div class="add-dice-buttons">
+                <button id="add-dice-cancel" class="add-dice-button cancel">Отмена</button>
+                <button id="add-dice-confirm" class="add-dice-button confirm">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Поп-ап для кубика -->
+    <div id="dice-popup" class="dice-popup" style="display: none;">
+        <div class="dice-popup-content">
+            <button class="dice-popup-close">&times;</button>
+            <h3>Проверка навыка</h3>
+            <div id="dice-container" class="dice-container"></div>
+            <div id="dice-result" class="dice-result"></div>
+            <div id="dice-message" class="dice-message"></div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для уведомлений -->
+    <div id="notification-modal" class="notification-modal" style="display: none;">
+        <div class="notification-modal-content">
+            <h3 class="notification-title">Подтвердите действие</h3>
+            <p class="notification-message" id="notification-message"></p>
+            <button class="notification-ok-button" id="notification-ok">OK</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
